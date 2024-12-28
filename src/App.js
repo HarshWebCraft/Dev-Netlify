@@ -19,7 +19,7 @@ function App() {
   const [time, setTime] = useState("");
 
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:5000"); // Match your backend WebSocket URL
+    const socket = new WebSocket("wss://seashell-app-447z9.ondigitalocean.app"); // Use your server's URL
 
     // Listen for messages
     socket.addEventListener("message", (event) => {
@@ -42,4 +42,5 @@ function App() {
 }
 
 export default App;
+
 
