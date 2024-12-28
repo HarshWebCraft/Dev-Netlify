@@ -16,8 +16,8 @@
 import React, { useEffect, useState } from "react";
 
 function App() {
-  const [randomNumber, setRandomNumber] = useState(null);
-  const [randomAlphabet, setRandomAlphabet] = useState(null);
+  const [alphabetData, setAlphabetData] = useState(null); // Data from WebSocket 1
+  const [numberData, setNumberData] = useState(null); // Data from WebSocket 2
 
   useEffect(() => {
     // Connect to WebSocket 1
@@ -25,7 +25,7 @@ function App() {
 
     socket1.addEventListener("message", (event) => {
       const data = JSON.parse(event.data);
-      setRandomNumber(data.randomNumber); // Update state with random number from WebSocket 1
+      setAlphabetData(data); // Update state with data from WebSocket 1
     });
 
     // Connect to WebSocket 2
@@ -33,10 +33,10 @@ function App() {
 
     socket2.addEventListener("message", (event) => {
       const data = JSON.parse(event.data);
-      setRandomAlphabet(data.randomAlphabet); // Update state with random alphabet from WebSocket 2
+      setNumberData(data); // Update state with data from WebSocket 2
     });
 
-    // Cleanup WebSocket connections on component unmount
+    // Cleanup both WebSockets on component unmount
     return () => {
       socket1.close();
       socket2.close();
@@ -45,17 +45,29 @@ function App() {
 
   return (
     <div>
-      <h1>Live Data from WebSockets</h1>
-      <p>
-        {randomNumber !== null
-          ? `Random Number (WebSocket 1): ${randomNumber}`
-          : "Waiting for random number..."}
-      </p>
-      <p>
-        {randomAlphabet !== null
-          ? `Random Alphabet (WebSocket 2): ${randomAlphabet}`
-          : "Waiting for random alphabet..."}
-      </p>
+      <h1>WebSocket Example</h1>
+      <div>
+        <h2>WebSocket 1: Random Alphabets</h2>
+        {alphabetData ? (
+          <p>
+            Alphabet: {alphabetData.char} <br />
+            Timestamp: {alphabetData.timestamp}
+          </p>
+        ) : (
+          <p>Waiting for data from WebSocket 1...</p>
+        )}
+      </div>
+      <div>
+        <h2>WebSocket 2: Random Numbers</h2>
+        {numberData ? (
+          <p>
+            Number: {numberData.number} <br />
+            Timestamp: {numberData.timestamp}
+          </p>
+        ) : (
+          <p>Waiting for data from WebSocket 2...</p>
+        )}
+      </div>
     </div>
   );
 }
