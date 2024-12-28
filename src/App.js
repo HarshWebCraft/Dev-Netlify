@@ -16,27 +16,38 @@
 import React, { useEffect, useState } from "react";
 
 function App() {
-  const [time, setTime] = useState("");
+  const [data1, setData1] = useState("");
+  const [data2, setData2] = useState("");
 
   useEffect(() => {
-    const socket = new WebSocket("wss://seashell-app-447z9.ondigitalocean.app"); // Use your server's URL
+    // Connect to WebSocket 1
+    const socket1 = new WebSocket("wss://seashell-app-447z9.ondigitalocean.app/ws1");
 
-    // Listen for messages
-    socket.addEventListener("message", (event) => {
+    socket1.addEventListener("message", (event) => {
       const data = JSON.parse(event.data);
-      setTime(data.time); // Update state with the current time
+      setData1(data.data1); // Update state with data from WebSocket 1
     });
 
-    // Cleanup on component unmount
+    // Connect to WebSocket 2
+    const socket2 = new WebSocket("wss://seashell-app-447z9.ondigitalocean.app/ws2");
+
+    socket2.addEventListener("message", (event) => {
+      const data = JSON.parse(event.data);
+      setData2(data.data2); // Update state with data from WebSocket 2
+    });
+
+    // Cleanup both WebSockets on component unmount
     return () => {
-      socket.close();
+      socket1.close();
+      socket2.close();
     };
   }, []);
 
   return (
     <div>
-      <h1>Live Time</h1>
-      <p>{time ? `Current Time: ${time}` : "Waiting for time..."}</p>
+      <h1>Live Data</h1>
+      <p>{data1 ? `WebSocket 1: ${data1} `: "Waiting for WebSocket 1..."}</p>
+      <p>{data2 ? `WebSocket 2: ${data2} `: "Waiting for WebSocket 2..."}</p>
     </div>
   );
 }
