@@ -1,96 +1,31 @@
-// import React, { useState, useEffect } from "react";
+// import React, { useEffect, useState } from "react";
 
-// const App = () => {
-//   const [stats, setStats] = useState({
-//     rss: "",
-//     heapTotal: "",
-//     heapUsed: "",
-//     external: "",
-//   });
-
-//   useEffect(() => {
-//     const ws = new WebSocket("wss://seahorse-app-53wlg.ondigitalocean.app");
-
-//     ws.onmessage = (event) => {
-//       const data = JSON.parse(event.data);
-//       setStats({
-//         rss: data.rss,
-//         heapTotal: data.heapTotal,
-//         heapUsed: data.heapUsed,
-//         external: data.external,
-//       });
-//     };
-
-//     return () => {
-//       ws.close();
-//     };
-//   }, []);
+// function App() {
+ 
 
 //   return (
 //     <div>
-//       <h1>Server stats</h1>
-//       <table>
-//         <thead>
-//           <tr>
-//             <th colSpan="2">Memory usage</th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           <tr>
-//             <td>RSS</td>
-//             <td>{stats.rss}</td>
-//           </tr>
-//           <tr>
-//             <td>Heap total</td>
-//             <td>{stats.heapTotal}</td>
-//           </tr>
-//           <tr>
-//             <td>Heap used</td>
-//             <td>{stats.heapUsed}</td>
-//           </tr>
-//           <tr>
-//             <td>External</td>
-//             <td>{stats.external}</td>
-//           </tr>
-//         </tbody>
-//       </table>
+//       <h1>WebSocket Example</h1>
+  
 //     </div>
 //   );
-// };
+// }
 
 // export default App;
 
 import React, { useEffect, useState } from "react";
 
 function App() {
-  const [message, setMessage] = useState("");
-  const [connectionStatus, setConnectionStatus] = useState("Connecting...");
+  const [time, setTime] = useState("");
 
   useEffect(() => {
-    // WebSocket URL for the server
-    const socket = new WebSocket("wss://seahorse-app-53wlg.ondigitalocean.app");
+    const socket = new WebSocket("ws://localhost:5000"); // Match your backend WebSocket URL
 
-    socket.onopen = () => {
-      console.log("WebSocket connected");
-      setConnectionStatus("Connected");
-    };
-
-    socket.onmessage = (event) => {
+    // Listen for messages
+    socket.addEventListener("message", (event) => {
       const data = JSON.parse(event.data);
-      console.log("Message from server:", data);
-      setMessage(`Symbol: ${data.symbol}, P&L: ${data.runningPnL}`);
-    };
-
-    socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
-      setConnectionStatus("Error");
-    };
-
-    socket.onclose = () => {
-      console.log("WebSocket disconnected");
-      setConnectionStatus("Disconnected");
-      // Optionally implement reconnection logic here
-    };
+      setTime(data.time); // Update state with the current time
+    });
 
     // Cleanup on component unmount
     return () => {
@@ -100,11 +35,11 @@ function App() {
 
   return (
     <div>
-      <h1>WebSocket Example</h1>
-      <p>Status: {connectionStatus}</p>
-      <p>Message from server: {message}</p>
+      <h1>Live Time</h1>
+      <p>{time ? `Current Time: ${time}` : "Waiting for time..."}</p>
     </div>
   );
 }
 
 export default App;
+
